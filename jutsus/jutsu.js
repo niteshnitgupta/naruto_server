@@ -14,8 +14,19 @@ function JutsuInVisible() {
 
 }
 
-function GetJutsuDetails() {
-
+exports.getJutsuDetails = function(jutsu_name, db, callback) {
+	var jutsu = {jutsu_name: jutsu_name};	
+	var collection = db.collection('jutsu_list');
+	collection.find(jutsu).toArray(function (err, result) {
+		if (err) {
+			log.fatal('Unable to read Jutsu');
+			callback("*");
+		} else if (result.length) {
+			callback(result);
+		} else {
+			callback("");
+		}
+	});
 }
 
 exports.addJutsu = function (jutsu_name, description, db) {

@@ -2,7 +2,7 @@ var express = require('express');
 var mongodb = require('mongodb');
 var datetime = require('node-datetime');
 var log4js = require('log4js');
-var justu = require('./jutsus/justu');
+var jutsu = require('./jutsus/jutsu');
 
 var log = log4js.getLogger();
 
@@ -12,14 +12,26 @@ var url = 'mongodb://localhost:27017/naruto';
 var app = express();
 
 
+app.get('/getJutsuDetails', function (req, res) {
+	MongoClient.connect(url, function (err, db) {
+		if (err) {
+			log.fatal('Unable to connect to database');
+			res.send('fatal error');
+		} else {
+			jutsu.getJutsuDetails("J100", db, function(jutsudetails) {
+				res.send(jutsudetails);
+			});
+		}
+	});
 
+});
 
 app.get('/saveJutsu', function (req, res) {
 	MongoClient.connect(url, function (err, db) {
 		if (err) {
 			log.fatal('Unable to connect to database');
 		} else {
-			justu.addJutsu("J100", "Jutsu Sharingan", db);
+			jutsu.addJutsu("J100", "Jutsu Sharingan", db);
 		}
 	});
 	res.send();
