@@ -14,8 +14,26 @@ function JutsuInVisible() {
 
 }
 
+/*
+* This function is used to get the list of ids for jutsu's
+* It accepts 
+*/
+function getJutsuID(jutsu_name, db, callback) {
+	var jutsu = {jutsu_name: {$in: [jutsu_name]}};
+	var collection = db.collection('jutsu_list');
+	collection.find(jutsu, {fields: {'_id':1}).toArray(function (err, result) {
+		if (err) {
+			log.fatal('Unable to read Jutsu');
+		} else if (result.length) {
+			callback(result);
+		} else {
+			callback("");
+		}
+	});
+}
+
 exports.getJutsuDetails = function(jutsu_name, db, callback) {
-	var jutsu = {jutsu_name: jutsu_name};	
+	var jutsu = {jutsu_name: jutsu_name};
 	var collection = db.collection('jutsu_list');
 	collection.find(jutsu).toArray(function (err, result) {
 		if (err) {

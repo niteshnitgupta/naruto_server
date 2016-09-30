@@ -66,11 +66,10 @@ app.get('/', function(req, res){
 
 
 
-
-
 var nsp = io.of('/myLocation');
 nsp.on('connection', function(socket){
   console.log('A user connected');
+  socket.join('username');
   socket.on('disconnect', function () {
     console.log('A user disconnected');
   });
