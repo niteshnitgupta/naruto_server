@@ -1,4 +1,4 @@
-var express = require('express');
+/*var express = require('express');
 var http = require('http').Server(app);
 var mongodb = require('mongodb');
 var datetime = require('node-datetime');
@@ -41,25 +41,40 @@ app.get('/saveJutsu', function (req, res) {
 	res.send();
 });
 
-app.get('/setJutsuVisible', function (req, res) {
-	MongoClient.connect(url, function (err, db) {
-		if (err) {
-			log.fatal('Unable to connect to database');
-		} else {
-			jutsu.setJutsuVisible("J100", 12.9592, 77.6974, "testStarttime", "testEndtime", db);
-		}
-	});
-	res.send();
-});
-
 app.get('/getJutsu', function (req, res) {
 
 });
 
-app.get('/', function (req, res) {
-	res.send("Completed");
+app.get('/testSocket', function (req, res) {
+	res.sendfile('test.html');
+});*/
+
+
+var express = require('express');
+var app = express();
+app.use(express.static(__dirname));
+
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+io.set('origins', '*:*');
+
+
+
+app.get('/', function(req, res){
+  res.sendfile('test.html');
 });
 
-app.listen(3000, function(){
+
+
+var nsp = io.of('/myLocation');
+nsp.on('connection', function(socket){
+  console.log('A user connected');
+  socket.join('username');
+  socket.on('disconnect', function () {
+    console.log('A user disconnected');
+  });
+});
+
+http.listen(3000, function(){
   console.log('listening on *:3000');
 });
