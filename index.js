@@ -3,7 +3,7 @@ var http = require('http').Server(app);
 var mongodb = require('mongodb');
 var datetime = require('node-datetime');
 var log4js = require('log4js');
-var jutsu = require('./jutsus/jutsu');
+var jutsu = require('./model/jutsu');
 
 
 var log = log4js.getLogger();

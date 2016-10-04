@@ -83,6 +83,5 @@ var addJutsuLog = function (jutsu_id, jutsu_name, logs, db) {
 		} else {
 			log.info('Jutsu log added successfully');
 		}
-		db.close();
 	});
 }

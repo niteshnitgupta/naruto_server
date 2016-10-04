@@ -5,6 +5,11 @@ db.createCollection("jutsu_list",{autoIndexID : true});
 db.createCollection("user_jutsu",{autoIndexID : true});
 db.createCollection("jutsu_location",{autoIndexID : true});
 db.createCollection("user_location",{autoIndexID : true});
+
+db.createCollection("village",{autoIndexID : true});
+db.createCollection("clan",{autoIndexID : true});
+db.createCollection("team",{autoIndexID : true});
+
 db.createCollection("user_activity_logs",{autoIndexID : true});
 db.createCollection("jutsu_activity_logs",{autoIndexID : true});
 
@@ -13,11 +18,11 @@ db.createCollection("jutsu_activity_logs",{autoIndexID : true});
 
 
 
-user.mycollection.drop()
-user_details.mycollection.drop()
-jutsu_list.mycollection.drop()
-user_jutsu.mycollection.drop()
-jutsu_location.mycollection.drop()
-user_location.mycollection.drop()
-user_activity_logs.mycollection.drop()
-jutsu_activity_logs.mycollection.drop()
+db.user.drop()
+db.user_details.drop()
+db.jutsu_list.drop()
+db.user_jutsu.drop()
+db.jutsu_location.drop()
+db.user_location.drop()
+db.user_activity_logs.drop()
+db.jutsu_activity_logs.drop()
