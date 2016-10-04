@@ -14,8 +14,9 @@ function addUser(username, auth, db, callback) {
 			log.fatal('Unable to insert User');
 		} else {
 			user_id = result.ops[0]._id;
-			addUserLog(user_id, user_name, "New User Added", db);
-			log.info('User added successfully');
+			addUserLog(user_id, user_name, "New User Added", db, function(){
+				log.info('User added successfully');	
+			});
 		}
 	});
 }
