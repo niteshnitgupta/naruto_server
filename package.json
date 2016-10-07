@@ -12,6 +12,7 @@
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "express": "^4.14.0",
+    "jsdoc": "^3.4.2",
     "jsonwebtoken": "^7.1.9",
     "log4js": "^0.6.38",
     "mongodb": "^2.2.10",

@@ -51,6 +51,7 @@ app.get('/testSocket', function (req, res) {
 
 
 var express = require('express');
+var datetime = require('node-datetime');
 var app = express();
 app.use(express.static(__dirname));
 
@@ -61,20 +62,27 @@ io.set('origins', '*:*');
 
 
 app.get('/', function(req, res){
-  res.sendfile('test.html');
+	res.sendfile('test.html');
 });
 
 
 
 var nsp = io.of('/myLocation');
+var i = 0;
+var clients=0;
 nsp.on('connection', function(socket){
-  console.log('A user connected');
-  socket.join('username');
-  socket.on('disconnect', function () {
-    console.log('A user disconnected');
-  });
+
+
+
+	clients++;
+	socket.broadcast.emit('msg',{ description: clients + ' clients connected!'})
+	
+	//io.sockets.in('Room1').emit('msg', "Joined Room 2 : " + currentTimeStamp);
+	socket.on('disconnect', function () {
+		console.log('A user disconnected');
+	});
 });
 
 http.listen(3000, function(){
-  console.log('listening on *:3000');
+	console.log('listening on *:3000');
 });

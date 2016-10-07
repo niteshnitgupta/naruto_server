@@ -1,45 +1,126 @@
 var datetime = require('node-datetime');
 var log4js = require('log4js');
 var log = log4js.getLogger();
+var jutsu = require('./jutsu');
+var village = require('./village');
+var clan = require('./clan');
+var team = require('./team');
 
-function getUsersNearMe() {
+/**
+ * This function is used to get userids 
+ * @param {string} user_name - Comma separated UserNames
+ * @param {dbconnection} db
+ * @param {callback} callback
+ */
+ var getUserIDs = exports.getUserIDs = function(user_name, db, callback) {
+ 	var user = {user_name: {$in: [user_name]}};
+ 	var collection = db.collection('user');
+ 	collection.find(user, {fields: {'_id':1}}).toArray(function (err, result) {
+ 		if (err) {
+ 			log.fatal('Unable to read user');
+ 		} else if (result.length) {
+ 			callback(result);
+ 		} else {
+ 			callback("");
+ 		}
+ 	});
+ }
 
-}
+ exports.addUser = function(user_name, auth, db, callback) {
+ 	var user = {user_name: user_name, auth: auth};
+ 	var collection = db.collection('user');
+ 	collection.insert([user], function (err, result) {
+ 		if (err) {
+ 			log.fatal('Unable to insert User');
+ 		} else {
+ 			user_id = result.ops[0]._id;
+ 			addUserLog(user_id, user_name, "New User Added", db, function(){
+ 				log.info('User added successfully');
+ 			});
+ 		}
+ 	});
+ }
 
-function addUser(username, auth, db, callback) {
-	var user = {user_name: user_name, description: description};	
-	var collection = db.collection('user_list');
-	collection.insert([user], function (err, result) {
-		if (err) {
-			log.fatal('Unable to insert User');
-		} else {
-			user_id = result.ops[0]._id;
-			addUserLog(user_id, user_name, "New User Added", db, function(){
-				log.info('User added successfully');	
-			});
-		}
-	});
-}
+ exports.addUserDetails = function(user_name, level, village_name, clan_name, team_name, health, chakra, db, callback) {
+ 	getUserIDs(user_name, db, function(user_id) {
+ 		village.getVillageID(village_name, db, function(village_id) {
+ 			clan.getClanID(clan_name, db, function(clan_id) {
+ 				team.getTeamID(team_name, db, function(team_id) {
+ 					var userDetails= {user_id:user_id,level:level,village_id:village_id,clan_id:clan_id,team_id:team_id,health:health,chakra:chakra};
+ 					var collection = db.collection('user_details');
+ 					collection.insert([userDetails], function (err, result) {
+ 						if (err) {
+ 							log.fatal('Unable to insert User Details');
+ 						} else {
+ 							addUserLog(user_id, user_name, "New Activity added", db, function(){
+ 								log.info('User Details added successfully');	
+ 							});
+ 						}
+ 					});	
+ 				});
+ 			});
+ 		});
+ 	});
+ }
 
-function addUserDetails(user_id, level, village_id, clan_id, team_id, health, chakra) {
+ exports.addUserJutsu = function(user_name,Jutsu_name,Jutsu_level,attack,defense, db, callback) {
+ 	getUserIDs(user_name, db, function(user_id){
+ 		var jutsu_id = jutsu.getJutsuID(Jutsu_name, db, function(jutsu_id){
+ 			var user_jutsu = {user_id: user_id,jutsu_id: jutsu_id, Jutsu_level:Jutsu_level,attack:attack,defense:defense};	
+ 			var collection = db.collection('user_jutsu');
+ 			collection.insert([user_jutsu], function (err, result) {
+ 				if (err) {
+ 					log.fatal('Unable to insert User Jutsu');
+ 				} else {
+ 					addUserLog(user_id, user_name, "New User Jutsu Added", db, function(){
+ 						log.info('User Jutsu added successfully');	
+ 					});
+ 				}
+ 			});	
+ 		});
+ 	});
+ }
 
-}
 
-function updateUserDetails(user_id, level, village_id, clan_id, team_id, health, chakra) {
+ exports.setUserVisible = function (user_name, lat, lon, start, end, db) {
+ 	getUserIDs(user_name, db, function(user_id) {
+ 		var user = {user_id: user_id[0]._id, loc:{lon: lon, lat:lat}, start:start, end:end};
+ 		var collection = db.collection('user_location');
+ 		collection.insert([user], function (err, result) {
+ 			if (err) {
+ 				log.fatal('Unable to insert user');
+ 			} else {
+ 				user_visible_id = result.ops[0]._id;
+ 				addUserLog(user_id, user_name, "User Visible ID: " + user_visible_id, db);
+ 				log.info('user visible successfully');
+ 			}
+ 		});
+ 	});
+ }
 
-}
-
-
-
-function updateUserActivityLog(user_id, user_name, logs, db, callback) {
-	var currentTimeStamp = datetime.create().format('d/m/Y H:M:S');
-	var userLog = {user_id:user_id, user_name: user_name, timestamp: currentTimeStamp, log: logs};	
-	var collection = db.collection('user_activity_logs');
-	collection.insert([userLog], function (err, result) {
-		if (err) {
-			log.error(err);
-		} else {
-			log.info('User log added successfully');
-		}
-	});
-}
+ exports.getUserDetails = function(user_name, db, callback) {
+ 	var user = {user_name: user_name};
+ 	var collection = db.collection('user');
+ 	collection.find(user).toArray(function (err, result) {
+ 		if (err) {
+ 			log.fatal('Unable to read Jutsu');
+ 			callback("*");
+ 		} else if (result.length) {
+ 			callback(result);
+ 		} else {
+ 			callback("");
+ 		}
+ 	});
+ }
+ function addUserLog(user_id, user_name, logs, db, callback) {
+ 	var currentTimeStamp = datetime.create().format('d/m/Y H:M:S');
+ 	var userLog = {user_id:user_id, user_name: user_name, timestamp: currentTimeStamp, log: logs};	
+ 	var collection = db.collection('user_activity_logs');
+ 	collection.insert([userLog], function (err, result) {
+ 		if (err) {
+ 			log.error(err);
+ 		} else {
+ 			log.info('User log added successfully');
+ 		}
+ 	});
+ }
