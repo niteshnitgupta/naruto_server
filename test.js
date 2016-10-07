@@ -69,15 +69,19 @@ app.get('/', function(req, res){
 
 var nsp = io.of('/myLocation');
 var i = 0;
-var clients=0;
 nsp.on('connection', function(socket){
+	i++;
+	var currentTimeStamp = datetime.create().format('d/m/Y H:M:S');
+	if (i % 2 == 0) {
+		console.log('Room1');
+		socket.join('Room1');
+		socket.broadcast.to('Room2').emit('msg', "Joined Room 1 : " + currentTimeStamp);
+	} else {
+		console.log('Room2');
+		socket.join('Room2');
+		socket.broadcast.to('Room1').emit('msg', "Joined Room 2 : " + currentTimeStamp);
+	}
 
-
-
-	clients++;
-	socket.broadcast.emit('msg',{ description: clients + ' clients connected!'})
-	
-	//io.sockets.in('Room1').emit('msg', "Joined Room 2 : " + currentTimeStamp);
 	socket.on('disconnect', function () {
 		console.log('A user disconnected');
 	});
