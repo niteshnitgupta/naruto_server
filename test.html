@@ -7,7 +7,7 @@ var socket = io('http://localhost:3000/myLocation');
 
 socket.on('msg',function(data){
 	document.body.innerHTML = '';
-	document.write(data.description);
+	document.write(data);
 });
 </script>
 <body>Hello world</body>
