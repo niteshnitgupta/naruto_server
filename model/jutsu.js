@@ -2,17 +2,13 @@ var datetime = require('node-datetime');
 var log4js = require('log4js');
 var log = log4js.getLogger();
 
-function GetJutsusNearMe() {
-
-}
-
 function JutsuInVisible() {
 
 }
 
 /*
 * This function is used to get the list of ids for jutsu's
-* It accepts 
+* It accepts
 */
 function getJutsuID(jutsu_name, db, callback) {
 	var jutsu = {jutsu_name: {$in: [jutsu_name]}};
@@ -44,7 +40,7 @@ exports.getJutsuDetails = function(jutsu_name, db, callback) {
 }
 
 exports.addJutsu = function (jutsu_name, description, db) {
-	var jutsu = {jutsu_name: jutsu_name, description: description};	
+	var jutsu = {jutsu_name: jutsu_name, description: description};
 	var collection = db.collection('jutsu_list');
 	collection.insert([jutsu], function (err, result) {
 		if (err) {
@@ -59,7 +55,7 @@ exports.addJutsu = function (jutsu_name, description, db) {
 
 exports.setJutsuVisible = function (jutsu_name, lat, lon, start, end, db) {
 	getJutsuID(jutsu_name, db, function(jutsu_id){
-		var jutsu = {jutsu_id: jutsu_id[0]._id, loc:{lon: lon, lat:lat}, start:start, end:end};
+		var jutsu = {jutsu_id: jutsu_id[0]._id, "location":{"type":"Point", "coordinates":[lon, lat]}, start:start, end:end};
 		var collection = db.collection('jutsu_location');
 		collection.insert([jutsu], function (err, result) {
 			if (err) {
@@ -75,7 +71,7 @@ exports.setJutsuVisible = function (jutsu_name, lat, lon, start, end, db) {
 
 var addJutsuLog = function (jutsu_id, jutsu_name, logs, db) {
 	var currentTimeStamp = datetime.create().format('d/m/Y H:M:S');
-	var jutsuLog = {jutsu_id:jutsu_id, jutsu_name: jutsu_name, timestamp: currentTimeStamp, log: logs};	
+	var jutsuLog = {jutsu_id:jutsu_id, jutsu_name: jutsu_name, timestamp: currentTimeStamp, log: logs};
 	var collection = db.collection('jutsu_activity_logs');
 	collection.insert([jutsuLog], function (err, result) {
 		if (err) {

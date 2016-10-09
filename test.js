@@ -1,34 +1,57 @@
 var express = require('express');
+var http = require('http').Server(app);
+var mongodb = require('mongodb');
 var datetime = require('node-datetime');
+var log4js = require('log4js');
+var jutsu = require('./model/jutsu');
+var user = require('./model/user');
+
+var log = log4js.getLogger();
+
+var MongoClient = mongodb.MongoClient;
+var url = 'mongodb://localhost:27017/naruto';
+
+var io = require('socket.io')(http);
+
+
 var app = express();
 app.use(express.static(__dirname));
 
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
 io.set('origins', '*:*');
-
-
 
 app.get('/', function(req, res){
 	res.sendfile('test.html');
 });
 
-
-
 var nsp = io.of('/myLocation');
-var i = 0;
 nsp.on('connection', function(socket){
-	i++;
-	var currentTimeStamp = datetime.create().format('d/m/Y H:M:S');
-	if (i % 2 == 0) {
-		console.log('Room1');
-		socket.join('Room1');
-		socket.broadcast.to('Room2').emit('msg', "Joined Room 1 : " + currentTimeStamp);
-	} else {
-		console.log('Room2');
-		socket.join('Room2');
-		socket.broadcast.to('Room1').emit('msg', "Joined Room 2 : " + currentTimeStamp);
-	}
+
+
+	MongoClient.connect(url, function (err, db) {
+		if (err) {
+			log.fatal('Unable to connect to database');
+			res.send('fatal error');
+		} else {
+			var username = socket.request._query["username"];
+			var lat = socket.request._query["lat"];
+			var lon = socket.request._query["lon"];
+			user.getUserIDs(username, function(user_ids) {
+				user_id = user_ids[0]._id;
+				socket.join(user_id);
+				user.setUserVisible(user_id, lat, lon, db, function() {
+					user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
+						nearby_user_ids.forEach(function(nearby_user_id){
+							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': type, 'lat': lat, 'lon': lon}");
+							user.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
+
+							});
+						});
+					});
+				});
+			});
+		}
+	});
+
 
 	socket.on('disconnect', function () {
 		console.log('A user disconnected');

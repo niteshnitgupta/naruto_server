@@ -4,7 +4,10 @@ db.createCollection("user_details",{autoIndexID : true});
 db.createCollection("jutsu_list",{autoIndexID : true});
 db.createCollection("user_jutsu",{autoIndexID : true});
 db.createCollection("jutsu_location",{autoIndexID : true});
+db.jutsu_location.ensureIndex({location:'2dsphere', type:1});
 db.createCollection("user_location",{autoIndexID : true});
+db.user_location.ensureIndex({location:'2dsphere', type:1});
+
 
 db.createCollection("village",{autoIndexID : true});
 db.createCollection("clan",{autoIndexID : true});
@@ -15,6 +18,8 @@ db.createCollection("jutsu_activity_logs",{autoIndexID : true});
 
 
 
+
+db.user_location.find({location:{$near:{$geometry:{type:"Point", coordinates:[43.232,-74.34]}, $maxDistance:100}}})
 
 
 
