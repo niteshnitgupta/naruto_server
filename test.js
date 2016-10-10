@@ -40,10 +40,11 @@ nsp.on('connection', function(socket){
 				socket.join(user_id);
 				user.setUserVisible(user_id, lat, lon, db, function() {
 					user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
+						console.log(nearby_user_ids[0].location);
 						nearby_user_ids.forEach(function(nearby_user_id){
 							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
 						});
-						user.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
+						jutsu.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
 						});
 					});
 				});
