@@ -84,13 +84,12 @@ var team = require('./team');
  exports.setUserVisible = function (user_id, lat, lon, db, callback) {
  		var user = {"user_id": user_id, "location":{"type":"Point", "coordinates":[lon, lat]}};
  		var collection = db.collection('user_location');
- 		collection.insert([user], function (err, result) {
+ 		collection.update({"user_id": user_id}, {$set:user}, {upsert:true}, function (err, result) {
  			if (err) {
         console.log(err);
  				log.fatal('Unable to insert user');
  			} else {
- 				user_visible_id = result.ops[0]._id;
- 				addUserLog(user_id, user_id, "User Visible ID: " + user_visible_id, db);
+        addUserLog(user_id, user_id, "User Visible ID", db);
  				log.info('user visible successfully');
  			}
  		});
