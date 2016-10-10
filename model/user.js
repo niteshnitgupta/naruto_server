@@ -86,10 +86,11 @@ var team = require('./team');
  		var collection = db.collection('user_location');
  		collection.insert([user], function (err, result) {
  			if (err) {
+        console.log(err);
  				log.fatal('Unable to insert user');
  			} else {
  				user_visible_id = result.ops[0]._id;
- 				addUserLog(user_id, user_name, "User Visible ID: " + user_visible_id, db);
+ 				addUserLog(user_id, user_id, "User Visible ID: " + user_visible_id, db);
  				log.info('user visible successfully');
  			}
  		});

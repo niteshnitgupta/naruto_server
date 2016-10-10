@@ -33,9 +33,9 @@ nsp.on('connection', function(socket){
 			res.send('fatal error');
 		} else {
 			var username = socket.request._query["username"];
-			var lat = socket.request._query["lat"];
-			var lon = socket.request._query["lon"];
-			user.getUserIDs(username, function(user_ids) {
+			var lat = parseFloat(socket.request._query["lat"]);
+			var lon = parseFloat(socket.request._query["lon"]);
+			user.getUserIDs(username, db, function(user_ids) {
 				user_id = user_ids[0]._id;
 				socket.join(user_id);
 				user.setUserVisible(user_id, lat, lon, db, function() {
