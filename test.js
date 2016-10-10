@@ -41,9 +41,8 @@ nsp.on('connection', function(socket){
 				user.setUserVisible(user_id, lat, lon, db, function() {
 					user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
 						nearby_user_ids.forEach(function(nearby_user_id){
-							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': type, 'lat': lat, 'lon': lon}");
+							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
 						});
-
 						user.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
 						});
 					});

@@ -81,9 +81,8 @@ var team = require('./team');
  	});
  }
 
- exports.setUserVisible = function (user_name, lat, lon, db, callback) {
- 	getUserIDs(user_name, db, function(user_id) {
- 		var user = {"user_id": user_id[0]._id, "location":{"type":"Point", "coordinates":[lon, lat]}};
+ exports.setUserVisible = function (user_id, lat, lon, db, callback) {
+ 		var user = {"user_id": user_id, "location":{"type":"Point", "coordinates":[lon, lat]}};
  		var collection = db.collection('user_location');
  		collection.insert([user], function (err, result) {
  			if (err) {
@@ -94,7 +93,6 @@ var team = require('./team');
  				log.info('user visible successfully');
  			}
  		});
- 	});
  }
 
  exports.getNearbyUser = function(lat, lon, db, callback) {
