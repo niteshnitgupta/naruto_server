@@ -42,7 +42,7 @@ MongoClient.connect(url, function (err, db) {
 						console.log("User Added");
 					});
 				}
-			},5000);
+			},3000);
 		}, 1000);
 
 
@@ -55,8 +55,9 @@ MongoClient.connect(url, function (err, db) {
 		var descriptions = ["D001", "D002", "D003"];
 		var attack_powers = [12,43,56];
 		var time_to_learns = [4,8,9];
-		var lats = [1,2,3];
-		var lons = [9,8,7];
+		var jlats = [76.800277, 76.800077, 76.800677];
+		var jlons = [29.906929, 29.908929, 29.902929];
+
 
 		for (var i=0; i<3; i++) {
 			var jutsu_name = jutsu_names[i];
@@ -77,13 +78,13 @@ MongoClient.connect(url, function (err, db) {
 			setTimeout(function(){
 				for (var i=0; i<3; i++) {
 					var jutsuid = jutsuids[i];
-					var lat = lats[i];
-					var lon = lons[i];
+					var lat = jlats[i];
+					var lon = jlons[i];
 					jutsu.setJutsuVisible(jutsuid, lat, lon, 12, 32, db, function(){
 						console.log("Jutsu Added");
 					});
 				}
-			},5000);
+			},3000);
 		}, 1000);
 	}
 });
