@@ -9,7 +9,7 @@ var jutsu = require('./model/jutsu');
 var log = log4js.getLogger();
 
 var MongoClient = mongodb.MongoClient;
-var url = 'mongodb://localhost:27017/naruto';
+var url = 'mongodb://127.0.0.1:27017/naruto';
 
 var app = express();
 
@@ -33,9 +33,10 @@ app.get('/getJutsuDetails', function (req, res) {
 app.get('/saveJutsu', function (req, res) {
 	MongoClient.connect(url, function (err, db) {
 		if (err) {
-			log.fatal('Unable to connect to database');
+                        // Console.log(err);
+			log.fatal(err);
 		} else {
-			jutsu.addJutsu("J100", "Jutsu Sharingan", db);
+			jutsu.addJutsu("J105", "Jutsu king", db);
 		}
 	});
 	res.send();
@@ -46,7 +47,7 @@ app.get('/setJutsuVisible', function (req, res) {
 		if (err) {
 			log.fatal('Unable to connect to database');
 		} else {
-			jutsu.setJutsuVisible("J100", 12.9592, 77.6974, "testStarttime", "testEndtime", db);
+			jutsu.setJutsuVisible("J105", 28.3992, 78.802377, "testStarttime", "testEndtime", db);
 		}
 	});
 	res.send();

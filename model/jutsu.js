@@ -70,8 +70,9 @@ exports.setJutsuVisible = function (jutsu_name, lat, lon, start, end, db) {
 }
 
 exports.getNearbyJutsu = function(lat, lon, db, callback) {
-	var user = {location:{$near:{$geometry:{type:"Point", coordinates:[lon,lat]}, $maxDistance:100}}};
+	var user = {location:{$near:{$geometry:{type:"Point", coordinates:[lon,lat]}, $maxDistance:100000}}};
 	 var collection = db.collection('jutsu_location');
+
 	 collection.find(user).toArray(function (err, result) {
 		 if (err) {
 			 log.fatal('Unable to read user location');
@@ -82,6 +83,7 @@ exports.getNearbyJutsu = function(lat, lon, db, callback) {
 		 }
 	 });
 }
+
 
 var addJutsuLog = function (jutsu_id, jutsu_name, logs, db) {
 	var currentTimeStamp = datetime.create().format('d/m/Y H:M:S');

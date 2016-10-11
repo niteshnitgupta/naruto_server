@@ -21,7 +21,7 @@ var team = require('./team');
  		} else if (result.length) {
  			callback(result);
  		} else {
- 			callback("");
+ 			callback();
  		}
  	});
  }
@@ -85,23 +85,29 @@ var team = require('./team');
  		var user = {"user_id": user_id, "location":{"type":"Point", "coordinates":[lon, lat]}};
  		var collection = db.collection('user_location');
  		collection.update({"user_id": user_id}, {$set:user}, {upsert:true}, function (err, result) {
+      //console.log("1");
  			if (err) {
+       // console.log("2");
         console.log(err);
  				log.fatal('Unable to insert user');
  			} else {
+        //console.log("3");
         addUserLog(user_id, user_id, "User Visible ID", db);
  				log.info('user visible successfully');
+        callback();
  			}
  		});
  }
 
  exports.getNearbyUser = function(lat, lon, db, callback) {
-   var user = {location:{$near:{$geometry:{type:"Point", coordinates:[lon,lat]}, $maxDistance:100}}};
+   var user = {location:{$near:{$geometry:{type:"Point", coordinates:[lon,lat]}, $maxDistance:10000}}};
   	var collection = db.collection('user_location');
+
   	collection.find(user).toArray(function (err, result) {
   		if (err) {
   			log.fatal('Unable to read user location');
   		} else if (result.length) {
+       // console.log(result);
   			callback(result);
   		} else {
   			callback("");
