@@ -17,7 +17,7 @@ db.createCollection("user_activity_logs",{autoIndexID : true});
 db.createCollection("jutsu_activity_logs",{autoIndexID : true});
 
 
-db.user_location.find({location:{$near:{$geometry:{type:"Point", coordinates:[43.232,-74.34]}, $maxDistance:100}}})
+db.user_location.find({location:{$near:{$geometry:{type:"Point", coordinates:[43.232,-74.34]}, $maxDistance:10000}}})
 
 
 
