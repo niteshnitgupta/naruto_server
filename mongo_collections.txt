@@ -3,6 +3,7 @@ db.createCollection("user",{autoIndexID : true});
 db.createCollection("user_details",{autoIndexID : true});
 db.createCollection("jutsu_list",{autoIndexID : true});
 db.createCollection("user_jutsu",{autoIndexID : true});
+db.createCollection("user_jutsu_learn",{autoIndexID : true});
 db.createCollection("jutsu_location",{autoIndexID : true});
 db.jutsu_location.ensureIndex({location:'2dsphere', type:1});
 db.createCollection("user_location",{autoIndexID : true});

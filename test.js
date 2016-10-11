@@ -53,6 +53,38 @@ nsp.on('connection', function(socket){
 		}
 	});
 
+	socket.on('getJutsuDetails', function(data){
+		MongoClient.connect(url, function (err, db) {
+			if (err) {
+				log.fatal('Unable to connect to database');
+				res.send('fatal error');
+			} else {
+				var jutsu_id = new mongodb.ObjectID(data.jutsu_id);
+				jutsu.getJutsuDetailsByID(jutsu_id, function(jutsuDetails){
+					socket.emit('jutsuDetails', jutsuDetails);
+					//user.addUserJutsuLearn(data.user_id, jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack, jutsuDetails.time_to_learn, db, function(){
+
+					//});
+				});
+			}
+		});
+	});
+
+	socket.on('learnNewJutsu', function(data){
+		MongoClient.connect(url, function (err, db) {
+			if (err) {
+				log.fatal('Unable to connect to database');
+				res.send('fatal error');
+			} else {
+				var jutsu_id = new mongodb.ObjectID(data.jutsu_id);
+				jutsu.getJutsuDetailsByID(jutsu_id, function(jutsuDetails){
+					user.addUserJutsuLearn(data.user_id, jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack, jutsuDetails.time_to_learn, db, function(){
+						socket.emit('newJutsuLearning', jutsuDetails);
+					});
+				});
+			}
+		});
+	});
 
 	socket.on('disconnect', function () {
 		console.log('A user disconnected');

@@ -81,6 +81,20 @@ var team = require('./team');
  	});
  }
 
+ exports.addUserJutsuLearn = function(user_id, jutsu_id, jutsu_level, attack, time_to_learn, db, callback) {
+ 			var user_jutsu_learn = {user_id: user_id,jutsu_id: jutsu_id, Jutsu_level:Jutsu_level,attack:attack,time_to_learn:time_to_learn};
+ 			var collection = db.collection('user_jutsu_learn');
+ 			collection.insert([user_jutsu_learn], function (err, result) {
+ 				if (err) {
+ 					log.fatal('Unable to insert User Jutsu Learn');
+ 				} else {
+ 					addUserLog(user_id, user_id, "New User Jutsu Added For Learning", db, function(){
+ 						log.info('User Jutsu Learn added successfully');
+ 					});
+ 				}
+ 			});
+ }
+
  exports.setUserVisible = function (user_id, lat, lon, db, callback) {
  		var user = {"user_id": user_id, "location":{"type":"Point", "coordinates":[lon, lat]}};
  		var collection = db.collection('user_location');

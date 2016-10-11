@@ -24,7 +24,7 @@ function getJutsuID(jutsu_name, db, callback) {
 	});
 }
 
-exports.getJutsuDetails = function(jutsu_name, db, callback) {
+exports.getJutsuDetailsByName = function(jutsu_name, db, callback) {
 	var jutsu = {jutsu_name: jutsu_name};
 	var collection = db.collection('jutsu_list');
 	collection.find(jutsu).toArray(function (err, result) {
@@ -39,8 +39,23 @@ exports.getJutsuDetails = function(jutsu_name, db, callback) {
 	});
 }
 
-exports.addJutsu = function (jutsu_name, description, db) {
-	var jutsu = {jutsu_name: jutsu_name, description: description};
+exports.getJutsuDetailsByID = function(jutsu_id, db, callback) {
+	var jutsu = {'_id': jutsu_id};
+	var collection = db.collection('jutsu_list');
+	collection.findOne(jutsu).toArray(function (err, result) {
+		if (err) {
+			log.fatal('Unable to read Jutsu');
+			callback("*");
+		} else if (result.length) {
+			callback(result);
+		} else {
+			callback({});
+		}
+	});
+}
+
+exports.addJutsu = function (jutsu_name, description, jutsu_level, attack_power, time_to_learn, db) {
+	var jutsu = {jutsu_name: jutsu_name, description: description, jutsu_level: jutsu_level, attack_power: attack_power, time_to_learn: time_to_learn};
 	var collection = db.collection('jutsu_list');
 	collection.insert([jutsu], function (err, result) {
 		if (err) {
