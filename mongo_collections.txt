@@ -21,6 +21,15 @@ db.user_location.find({location:{$near:{$geometry:{type:"Point", coordinates:[43
 
 
 
+
+db.user.insert({user_name:"U01", "auth":"Auth"})
+db.user.insert({user_name:"U02", "auth":"Auth"})
+db.user.insert({user_name:"U03", "auth":"Auth"})
+
+
+
+
+
 db.user.drop()
 db.user_details.drop()
 db.jutsu_list.drop()
