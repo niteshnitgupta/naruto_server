@@ -26,7 +26,7 @@ app.get('/', function(req, res){
 var nsp = io.of('/myLocation');
 nsp.on('connection', function(socket){
 
- 
+
 	MongoClient.connect(url, function (err, db) {
 		if (err) {
 			log.fatal('Unable to connect to database');
@@ -40,12 +40,12 @@ nsp.on('connection', function(socket){
 				socket.join(user_id);
 				user.setUserVisible(user_id, lat, lon, db, function() {
 					user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
-						socket.send(nearby_user_ids);
 						nearby_user_ids.forEach(function(nearby_user_id){
 							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
 						});
 						jutsu.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
-							
+							socket.emit('nearbyuser',JSON.stringify(nearby_user_ids));
+							socket.emit('message',JSON.stringify(nearby_jutsus));
 						});
 					});
 				});
