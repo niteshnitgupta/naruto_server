@@ -16,10 +16,9 @@ MongoClient.connect(url, function (err, db) {
 		log.fatal('Unable to connect to database');
 		res.send('fatal error');
 	} else {
-
 		var user_names = ["U001", "U002", "U003"];
-		var lats = [1,2,3];
-		var lons = [9,8,7];
+		var lats = [76.810277, 76.810077, 76.810677];
+		var lons = [29.906929, 29.908929, 29.902929];
 		for (var i=0; i<3; i++) {
 			var user_name = user_names[i];
 			user.addUser(user_name, "Auth", db, function(){
