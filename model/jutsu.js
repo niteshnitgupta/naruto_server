@@ -10,7 +10,7 @@ function JutsuInVisible() {
 * This function is used to get the list of ids for jutsu's
 * It accepts
 */
-function getJutsuID(jutsu_name, db, callback) {
+var getJutsuID = exports.getJutsuID = function(jutsu_name, db, callback) {
 	var jutsu = {jutsu_name: {$in: [jutsu_name]}};
 	var collection = db.collection('jutsu_list');
 	collection.find(jutsu, {fields: {'_id':1}}).toArray(function (err, result) {
@@ -68,19 +68,18 @@ exports.addJutsu = function (jutsu_name, description, jutsu_level, attack_power,
 	});
 }
 
-exports.setJutsuVisible = function (jutsu_name, lat, lon, start, end, db) {
-	getJutsuID(jutsu_name, db, function(jutsu_id){
-		var jutsu = {jutsu_id: jutsu_id[0]._id, "location":{"type":"Point", "coordinates":[lon, lat]}, start:start, end:end};
-		var collection = db.collection('jutsu_location');
-		collection.insert([jutsu], function (err, result) {
-			if (err) {
-				log.fatal('Unable to insert Jutsu');
-			} else {
-				jutsu_visible_id = result.ops[0]._id;
-				addJutsuLog(jutsu_id, jutsu_name, "Jutsu Visible ID: " + jutsu_visible_id, db);
-				log.info('Jutsu visible successfully');
-			}
-		});
+exports.setJutsuVisible = function (jutsu_id, lat, lon, start, end, db, callback) {
+	var jutsu = {jutsu_id: jutsu_id, "location":{"type":"Point", "coordinates":[lon, lat]}, start:start, end:end};
+	var collection = db.collection('jutsu_location');
+	collection.insert([jutsu], function (err, result) {
+		if (err) {
+			log.fatal('Unable to insert Jutsu');
+		} else {
+			jutsu_visible_id = result.ops[0]._id;
+			addJutsuLog(jutsu_id, jutsu_id, "Jutsu Visible ID: " + jutsu_visible_id, db);
+			log.info('Jutsu visible successfully');
+		}
+		callback();
 	});
 }
 

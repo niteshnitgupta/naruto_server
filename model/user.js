@@ -38,6 +38,7 @@ var team = require('./team');
  				log.info('User added successfully');
  			});
  		}
+    callback();
  	});
  }
 
