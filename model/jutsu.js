@@ -79,7 +79,7 @@ exports.getNearbyJutsu = function(lat, lon, db, callback) {
 		 } else if (result.length) {
 			 callback(result);
 		 } else {
-			 callback("");
+			 callback({});
 		 }
 	 });
 }

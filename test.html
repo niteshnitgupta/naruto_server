@@ -3,9 +3,10 @@
 <head><title>Hello world</title></head>
 <script src="socket.io-1.4.5.js"></script>
 <script>
-var la = 12;
-var lon=21;
-var socket = io('http://127.0.0.1:3000/myLocation', {query: "username=U102&lat="+la +"&lon="+lon});
+var la =76.818207;
+
+var lon=29.946944;
+var socket = io('http://127.0.0.1:3000/myLocation', {query: "username=U100&lat="+la +"&lon="+lon});
 
 socket.on('message',function(data){
 	console.log(data);

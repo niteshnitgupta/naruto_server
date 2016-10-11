@@ -162,3 +162,15 @@ app.get('/saveUserJutsu', function (req, res) {
 	});
 	res.send();
 });
+
+
+app.get('/setUserVisible', function (req, res) {
+	MongoClient.connect(url, function (err, db) {
+		if (err) {
+			log.fatal('Unable to connect to database');
+		} else {
+			user.setUserVisible("U100",  29.946924,76.819697, db);
+		}
+	});
+	res.send();
+});

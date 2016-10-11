@@ -44,8 +44,8 @@ nsp.on('connection', function(socket){
 							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
 						});
 						jutsu.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
-							socket.emit('nearbyuser',JSON.stringify(nearby_user_ids));
-							socket.emit('message',JSON.stringify(nearby_jutsus));
+							socket.emit('nearbyuser',nearby_user_ids);
+							socket.emit('nearbyjutsu',nearby_jutsus);
 						});
 					});
 				});

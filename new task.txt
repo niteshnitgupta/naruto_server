@@ -1,0 +1,11 @@
+1... when user move ->on postion change->create new socket n call  all function and update other users
+
+as we get new coordinate save in global array and when we move check global and local array if no match then add in aarray in add marker 
+
+and if not in local then remove tfrom from global and remove marker
+and its point too
+
+
+make pop on jutsu click and display all details
+
+marker.addlistner.click
