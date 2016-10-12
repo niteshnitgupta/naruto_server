@@ -53,15 +53,20 @@ nsp.on('connection', function(socket){
 		}
 	});
 
-	socket.on('getJutsuDetails', function(data){
+
+
+	socket.on('getJutsuDetails', function(data, callback){
 		MongoClient.connect(url, function (err, db) {
 			if (err) {
 				log.fatal('Unable to connect to database');
 				res.send('fatal error');
 			} else {
+				//var temp_jutsu_id= socket.request._query["jutsu_id"];
+
 				var jutsu_id = new mongodb.ObjectID(data.jutsu_id);
-				jutsu.getJutsuDetailsByID(jutsu_id, function(jutsuDetails){
-					socket.emit('jutsuDetails', jutsuDetails);
+				//console.log(data);
+				jutsu.getJutsuDetailsByID(jutsu_id,db, function(jutsuDetails){
+					callback(jutsuDetails);
 					//user.addUserJutsuLearn(data.user_id, jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack, jutsuDetails.time_to_learn, db, function(){
 
 					//});
@@ -70,17 +75,26 @@ nsp.on('connection', function(socket){
 		});
 	});
 
+
+
+
 	socket.on('learnNewJutsu', function(data){
+		console.log("step2");
 		MongoClient.connect(url, function (err, db) {
 			if (err) {
 				log.fatal('Unable to connect to database');
 				res.send('fatal error');
 			} else {
 				var jutsu_id = new mongodb.ObjectID(data.jutsu_id);
-				jutsu.getJutsuDetailsByID(jutsu_id, function(jutsuDetails){
-					user.addUserJutsuLearn(data.user_id, jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack, jutsuDetails.time_to_learn, db, function(){
-						socket.emit('newJutsuLearning', jutsuDetails);
-					});
+				jutsu.getJutsuDetailsByID(jutsu_id,db, function(jutsuDetails){
+					console.log(data.jutsu_id);
+					user.getUserIDs(data.username,db,function(user_id){
+						console.log("step3");
+						user.addUserJutsuLearn(user_id,jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack_power, jutsuDetails.time_to_learn, db, function(){
+							//socket.emit('newJutsuLearning', jutsuDetails);
+	                       console.log("jutsu_added to user");
+						});
+					})	
 				});
 			}
 		});

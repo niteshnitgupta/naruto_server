@@ -42,13 +42,15 @@ exports.getJutsuDetailsByName = function(jutsu_name, db, callback) {
 exports.getJutsuDetailsByID = function(jutsu_id, db, callback) {
 	var jutsu = {'_id': jutsu_id};
 	var collection = db.collection('jutsu_list');
-	collection.findOne(jutsu).toArray(function (err, result) {
+	collection.find(jutsu).toArray(function (err, result) {
 		if (err) {
 			log.fatal('Unable to read Jutsu');
 			callback("*");
 		} else if (result.length) {
-			callback(result);
+			//console.log("1");
+			callback(result[0]);
 		} else {
+			//console.log("2");
 			callback({});
 		}
 	});
