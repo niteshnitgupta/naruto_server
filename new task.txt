@@ -9,3 +9,20 @@ and its point too
 make pop on jutsu click and display all details
 
 marker.addlistner.click
+
+
+
+
+update points while moving 
+it not fetching the point correctly
+currently it is taking hit before
+
+
+
+when same jutusu is collected by a user  it will just enhance its power.
+
+
+
+
+ tools and weapons to be made 
+collect and add n use in fight

@@ -47,7 +47,7 @@ app.get('/setJutsuVisible', function (req, res) {
 		if (err) {
 			log.fatal('Unable to connect to database');
 		} else {
-			jutsu.setJutsuVisible("J101",  76.810272,29.906924, "testStarttime", "testEndtime", db);
+			jutsu.setJutsuVisible("J101",  76.810274,29.906924, "testStarttime", "testEndtime", db);
 		}
 	});
 	res.send();
