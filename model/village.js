@@ -9,7 +9,8 @@ exports.getVillageID = function (village_name, db, callback) {
 		if (err) {
 			log.fatal('Unable to read village');
 		} else if (result.length) {
-			callback(result);
+			console.log(result[0]._id);
+			callback(result[0]._id);
 		} else {
 			callback("");
 		}
@@ -28,15 +29,17 @@ exports.addVillage = function (village_name, description, db) {
 	});
 }
 
-exports.getVillageDetails = function(village_name, db, callback) {
-	var village = {village_name: village_name};
+exports.getVillageDetails = function(village_id, db, callback) {
+	var village = {_id: village_id};
 	var collection = db.collection('village');
 	collection.find(village).toArray(function (err, result) {
 		if (err) {
-			log.fatal('Unable to read Jutsu');
+			log.fatal('Unable to read data');
 			callback("*");
 		} else if (result.length) {
-			callback(result);
+			console.log("village");
+			console.log(result[0]);
+			callback(result[0]);
 		} else {
 			callback("");
 		}

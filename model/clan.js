@@ -9,7 +9,7 @@ exports.getClanID = function(clan_name, db, callback) {
 		if (err) {
 			log.fatal('Unable to read clan');
 		} else if (result.length) {
-			callback(result);
+			callback(result[0]._id);
 		} else {
 			callback("");
 		}
@@ -28,15 +28,18 @@ exports.addClan = function (clan_name, description, db) {
 	});
 }
 
-exports.getClanDetails = function(clan_name, db, callback) {
-	var clan = {clan_name:clan_name};
+exports.getClanDetails = function(clan_id, db, callback) {
+	console.log(clan_id);
+	var clan = {_id:clan_id};
 	var collection = db.collection('clan');
 	collection.find(clan).toArray(function (err, result) {
 		if (err) {
-			log.fatal('Unable to read Jutsu');
+			log.fatal('Unable to read data');
 			callback("*");
-		} else if (result.length) {
-			callback(result);
+		} else if (result.length){
+		    console.log("clan"); 
+			console.log(result[0]);
+			callback(result[0]);
 		} else {
 			callback("");
 		}

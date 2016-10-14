@@ -9,7 +9,7 @@ exports.getTeamID = function(team_name, db, callback) {
 		if (err) {
 			log.fatal('Unable to read team');
 		} else if (result.length) {
-			callback(result);
+			callback(result[0]._id);
 		} else {
 			callback("");
 		}
@@ -28,15 +28,17 @@ exports.addTeam = function(team_name, description, db) {
 	});
 }
 
-exports.getTeamDetails = function(team_name, db, callback) {
-	var team = {team_name: team_name};
+exports.getTeamDetails = function(team_id, db, callback) {
+	var team = {_id: team_id};
 	var collection = db.collection('team');
 	collection.find(team).toArray(function (err, result) {
 		if (err) {
-			log.fatal('Unable to read Jutsu');
+			log.fatal('Unable to read data');
 			callback("*");
 		} else if (result.length) {
-			callback(result);
+			console.log("team");
+			console.log(result[0]);
+			callback(result[0]);
 		} else {
 			callback("");
 		}

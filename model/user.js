@@ -135,20 +135,43 @@ var team = require('./team');
   	});
  }
 
- exports.getUserDetails = function(user_id, db, callback) {
- 	var user = {user_id: user_id};
- 	var collection = db.collection('user_details');
- 	collection.find(user).toArray(function (err, result) {
- 		if (err) {
- 			log.fatal('Unable to read Jutsu');
- 			callback("*");
- 		} else if (result.length) {
- 			callback(result);
- 		} else {
- 			callback("");
- 		}
- 	});
+
+
+
+ exports.loadJutsuDetails = function(user_id, db, callback) {
+  var user = {user_id: user_id};
+  var collection = db.collection('user_details');
+  collection.find(user).toArray(function (err, result) {
+    if (err) {
+      log.fatal('Unable to read Data');
+      callback("*");
+    } else if (result.length) {
+      callback(result);
+    } else {
+      callback("");
+    }
+  });
  }
+
+
+
+
+ exports.getUserDetails = function(user_id, db, callback) {
+  var user = {user_id:user_id[0]._id};
+  var collection = db.collection('user_details');
+  collection.find(user).toArray(function (err, result) {
+    if (err) {
+      log.fatal('Unable to read Data');
+      callback("*");
+    } else if (result.length) {
+      callback(result[0]);
+    } else {
+      callback("");
+    }
+  });
+}
+
+
 
 
  function addUserLog(user_id, user_name, logs, db, callback) {
