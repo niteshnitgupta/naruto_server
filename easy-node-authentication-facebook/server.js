@@ -20,13 +20,16 @@ app.configure(function() {
 
 	// set up our express application
 	app.use(express.logger('dev')); // log every request to the console
+
+	var month = 1000 * 60 * 60 * 24 * 30 * 12;
+
 	app.use(express.cookieParser()); // read cookies (needed for auth)
 	app.use(express.bodyParser()); // get information from html forms
 
 	app.set('view engine', 'ejs'); // set up ejs for templating
 
 	// required for passport
-	app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+	app.use(express.session({ secret: 'ilovescotchscotchyscotchscotch', cookie: {maxAge: month} })); // session secret
 	app.use(passport.initialize());
 	app.use(passport.session()); // persistent login sessions
 	app.use(flash()); // use connect-flash for flash messages stored in session
