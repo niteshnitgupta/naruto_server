@@ -76,7 +76,6 @@ module.exports = function(passport) {
         clientSecret    : configAuth.facebookAuth.clientSecret,
         callbackURL     : configAuth.facebookAuth.callbackURL,
         profileFields   : ['id', 'emails', 'name']
-
     },
 
     // facebook will send back the token and profile
