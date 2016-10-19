@@ -8,6 +8,7 @@ var passport = require('passport');
 var session = require('express-session');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var jwt = require('jwt-simple');
+var moment = require('moment');
 
 var jutsu = require('./model/jutsu');
 var user = require('./model/user');
@@ -49,26 +50,36 @@ app.use(passport.session());
 
 io.set('origins', '*:*');
 
-app.get('/auth/facebook', passport.authenticate('facebook'), function (req, res) { 
+app.get('/auth/facebook', passport.authenticate('facebook'), function (req, res) {
+	console.log(req); 
 
 });
+
 app.get('/auth/facebook/callback', passport.authenticate('facebook', {failureRedirect: '/' }), function (req, res) {
 	MongoClient.connect(url, function (err, db) {
-		user.getUserID_InsertIfNotExists(req.user.id, req.user.displayName, req.user.emails[0].value, req.user.gender, db, function(result){
-			console.log(result);
+		user.getUserID_InsertIfNotExists(req.user.id, req.user.displayName, "ssf", req.user.gender, db, function(result){
+			db.close();
 			var expires = moment().add('days', 365).valueOf();
 			var token = jwt.encode({
 				iss: result,
 				exp: expires
 			}, app.get('jwtTokenSecret'));
-			//**** Cleate jwt token with _id and return it to user.
-			//**** redirect to localhost
-			res.send(result);
-			res.json({
-				token: token,
-				expires: expires,
-				userid: result
-			});
+			res.send("<script type=\"text/javascript\">opener.postMessage(\"" + token + "\",'*'); window.close();</script>");			
+		});
+	});
+});
+
+app.get('/auth', function(req, res) {
+	var userid = new mongodb.ObjectID(jwt.decode(req.query.token, app.get('jwtTokenSecret')).iss);
+	console.log(userid);
+	MongoClient.connect(url, function (err, db) {
+		user.getUserName(userid, db, function(user){
+			console.log(user);
+			if (user.length) {
+				res.send("authorized");
+			} else {
+				res.send("unauthorized");
+			}
 		});
 	});
 });

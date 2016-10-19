@@ -24,6 +24,21 @@ var getUserID_InsertIfNotExists = exports.getUserID_InsertIfNotExists = function
  	});
 }
 
+var getUserName = exports.getUserName = function(user_id, db, callback) {
+ 	var user = {_id: user_id};
+ 	var collection = db.collection('user');
+ 	collection.find(user, {fields: {'_id':1}}).toArray(function (err, result) {
+ 		if (err) {
+ 			log.fatal('Unable to read user');
+ 		} else if (result.length) {
+ 			callback(result);
+ 		} else {
+			var arr = new Array();
+ 			callback(arr);
+ 		}
+ 	});
+ }
+
 /**
  * This function is used to get userids
  * @param {string} user_name - Comma separated UserNames
@@ -39,7 +54,8 @@ var getUserID_InsertIfNotExists = exports.getUserID_InsertIfNotExists = function
  		} else if (result.length) {
  			callback(result);
  		} else {
- 			callback();
+			var arr = new Array();
+ 			callback(arr);
  		}
  	});
  }
