@@ -7,6 +7,7 @@ var log4js = require('log4js');
 var passport = require('passport');
 var session = require('express-session');
 var FacebookStrategy = require('passport-facebook').Strategy;
+var jwt = require('jwt-simple');
 
 var jutsu = require('./model/jutsu');
 var user = require('./model/user');
@@ -42,6 +43,7 @@ passport.use(new FacebookStrategy({
 
 app.use(express.static(__dirname));
 app.use(session({secret: 'my_precious', saveUninitialized: true, resave: true }));
+app.set('jwtTokenSecret', 'YOUR_SECRET_STRING');
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -54,9 +56,19 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {failureRed
 	MongoClient.connect(url, function (err, db) {
 		user.getUserID_InsertIfNotExists(req.user.id, req.user.displayName, req.user.emails[0].value, req.user.gender, db, function(result){
 			console.log(result);
+			var expires = moment().add('days', 365).valueOf();
+			var token = jwt.encode({
+				iss: result,
+				exp: expires
+			}, app.get('jwtTokenSecret'));
 			//**** Cleate jwt token with _id and return it to user.
 			//**** redirect to localhost
 			res.send(result);
+			res.json({
+				token: token,
+				expires: expires,
+				userid: result
+			});
 		});
 	});
 });
