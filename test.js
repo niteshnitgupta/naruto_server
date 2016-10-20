@@ -106,13 +106,13 @@ nsp.on('connection', function(socket){
 			var lat = parseFloat(socket.request._query["lat"]);
 			var lon = parseFloat(socket.request._query["lon"]);
 			var user_id = jwt.decode(socket.request._query["username"], app.get('jwtTokenSecret')).iss;
-			socket.join(user_id);
+			//socket.join(user_id);
 			user.setUserVisible(user_id, lat, lon, db, function() {
 				user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
 					/* We may need to delete this */
-					nearby_user_ids.forEach(function(nearby_user_id){
-						socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
-					});
+					//nearby_user_ids.forEach(function(nearby_user_id){
+					//	socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
+					//});
 					/******************************/
 					jutsu.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
 						socket.emit('nearbyuser',nearby_user_ids);
@@ -124,7 +124,18 @@ nsp.on('connection', function(socket){
 		}
 	});
 
-
+	socket.on('updateUserLocation', function(data, callback){
+		MongoClient.connect(url, function (err, db) {
+			if (err) {
+				console.log(err);
+				log.fatal('Unable to connect to database');
+			} else {
+				user.setUserVisible(jwt.decode(data.username, app.get('jwtTokenSecret')).iss, data.lat, data.lon, db, function() {
+					db.close();
+				});
+			}
+		});
+	});
 
 	socket.on('getJutsuDetails', function(data, callback){
 		MongoClient.connect(url, function (err, db) {
@@ -138,7 +149,7 @@ nsp.on('connection', function(socket){
 					callback(jutsuDetails);
 					//user.addUserJutsuLearn(data.user_id, jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack, jutsuDetails.time_to_learn, db, function(){
 					//});
-			});
+				});
 			}
 		});
 	});
@@ -230,6 +241,7 @@ nsp.on('connection', function(socket){
 
 	socket.on('disconnect', function () {
 		console.log('A user disconnected');
+		console.log(socket.handshake.query.username);
 	});
 });
 
