@@ -16,7 +16,7 @@ var getUserID_InsertIfNotExists = exports.getUserID_InsertIfNotExists = function
  			callback(result._id);
  		} else {
 			 addUser(fbid, display_name, email, gender, db, function (userid) {
-				 addUserDetails(userid, 1, "village_name", "clan_name", "team_name", 100, 100, db, function(user_id) {
+				 addUserDetails(userid, 1, "V100", "C100", "T100", 100, 100, db, function(user_id) {
 					 callback(user_id);
 				 });
 			 });
@@ -180,14 +180,14 @@ var getUserName = exports.getUserName = function(user_id, db, callback) {
 
 
  exports.getUserDetails = function(user_id, db, callback) {
-  var user = {user_id:user_id[0]._id};
+  var user = {user_id:user_id};
   var collection = db.collection('user_details');
-  collection.find(user).toArray(function (err, result) {
+  collection.findOne(user, function (err, result) {
     if (err) {
       log.fatal('Unable to read Data');
       callback("*");
-    } else if (result.length) {
-      callback(result[0]);
+    } else if (result) {
+			callback(result);
     } else {
       callback("");
     }
@@ -206,7 +206,9 @@ var getUserName = exports.getUserName = function(user_id, db, callback) {
  			log.error(err);
  		} else {
  			log.info('User log added successfully');
-			callback();
+			 if (callback !== undefined) {
+				 callback();
+			 }
  		}
  	});
  }

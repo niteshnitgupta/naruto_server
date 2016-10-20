@@ -9,6 +9,7 @@ var session = require('express-session');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var jwt = require('jwt-simple');
 var moment = require('moment');
+var cors = require('cors');
 
 var jutsu = require('./model/jutsu');
 var user = require('./model/user');
@@ -47,6 +48,8 @@ app.use(session({secret: 'my_precious', saveUninitialized: true, resave: true })
 app.set('jwtTokenSecret', 'YOUR_SECRET_STRING');
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
+app.options('*', cors());
 
 io.set('origins', '*:*');
 
@@ -95,32 +98,26 @@ app.get('/', function(req, res){
 
 var nsp = io.of('/myLocation');
 nsp.on('connection', function(socket){
-
-
 	MongoClient.connect(url, function (err, db) {
 		if (err) {
 			console.log(err);
 			log.fatal('Unable to connect to database');
 		} else {
-			var username = socket.request._query["username"];
 			var lat = parseFloat(socket.request._query["lat"]);
 			var lon = parseFloat(socket.request._query["lon"]);
-			user.getUserIDs(username, db, function(user_ids) {
-				user_id = user_ids[0]._id;
-				socket.join(user_id);
-				user.setUserVisible(user_id, lat, lon, db, function() {
-					user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
-						/* We may need to delete this */
-						nearby_user_ids.forEach(function(nearby_user_id){
-							socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
-						});
-						/******************************/
-
-						jutsu.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
-							socket.emit('nearbyuser',nearby_user_ids);
-							socket.emit('nearbyjutsu',nearby_jutsus);
-							db.close();
-						});
+			var user_id = jwt.decode(socket.request._query["username"], app.get('jwtTokenSecret')).iss;
+			socket.join(user_id);
+			user.setUserVisible(user_id, lat, lon, db, function() {
+				user.getNearbyUser(lat, lon, db, function(nearby_user_ids) {
+					/* We may need to delete this */
+					nearby_user_ids.forEach(function(nearby_user_id){
+						socket.broadcast.to(nearby_user_id).emit('nearby_user', "{'user_type': 'student', 'lat': " + lat + ", 'lon': " + lon + "}");
+					});
+					/******************************/
+					jutsu.getNearbyJutsu(lat, lon, db, function(nearby_jutsus) {
+						socket.emit('nearbyuser',nearby_user_ids);
+						socket.emit('nearbyjutsu',nearby_jutsus);
+						db.close();
 					});
 				});
 			});
@@ -157,12 +154,11 @@ nsp.on('connection', function(socket){
 			} else {
 				var jutsu_id = new mongodb.ObjectID(data.jutsu_id);
 				jutsu.getJutsuDetailsByID(jutsu_id,db, function(jutsuDetails){
-					user.getUserIDs(data.username,db,function(user_id){
-						user.addUserJutsuLearn(user_id,jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack_power, jutsuDetails.time_to_learn, db, function(){
-							db.close();
-							console.log("jutsu_added to user");
-						});
-					})	
+					user_id = jwt.decode(data.username, app.get('jwtTokenSecret')).iss;
+					user.addUserJutsuLearn(user_id,jutsu_id, jutsuDetails.jutsu_level, jutsuDetails.attack_power, jutsuDetails.time_to_learn, db, function(){
+						db.close();
+						console.log("jutsu_added to user");
+					});	
 				});
 			}
 		});
@@ -176,11 +172,10 @@ nsp.on('connection', function(socket){
 				log.fatal('Unable to connect to database');
 				res.send('fatal error');
 			} else {
-				user.getUserIDs(data.username,db,function(user_id){
-					user.addUserDetails(data.username,data.level, data.village_name, data.clan_name, data.team_name, data.health, data.chakra, db, function(){
-						db.close();
-						console.log("jutsu_added to user");
-					});
+				user_id = new mongodb.ObjectID(jwt.decode(data.username, app.get('jwtTokenSecret')).iss);
+				user.addUserDetails(data.username,data.level, data.village_name, data.clan_name, data.team_name, data.health, data.chakra, db, function(){
+					db.close();
+					console.log("jutsu_added to user");
 				});	
 			}
 		});
@@ -196,18 +191,20 @@ nsp.on('connection', function(socket){
 				log.fatal('Unable to connect to database');
 				res.send('fatal error');
 			} else {
-				user.getUserIDs(data.username,db,function(user_id){
-					user.getUserDetails(user_id, db, function(data_user){
-						clan.getClanDetails(data_user.clan_id,db,function(data_clan){
-							team.getTeamDetails(data_user.team_id,db,function(data_team){
-								village.getVillageDetails(data_user.village_id,db,function(data_village){
-                                    var all_data={level:data_user.level,village_name:data_village.village_name,clan_name:data_clan.clan_name,team_name:data_team.team_name,health:data_user.health,chakra:data_user.chakra};
-                                    db.close();
-									callback(all_data);
-                                });
-							});
+				user_id = new mongodb.ObjectID(jwt.decode(data.username, app.get('jwtTokenSecret')).iss);
+				user.getUserDetails(user_id, db, function(data_user){
+					clan.getClanDetails(data_user.clan_id,db,function(data_clan){
+						console.log("data_clan" + data_clan);
+						team.getTeamDetails(data_user.team_id,db,function(data_team){
+							console.log("data_team" + data_team);
+							village.getVillageDetails(data_user.village_id,db,function(data_village){
+								console.log("data_village" + data_village);
+								var all_data={level:data_user.level,village_name:data_village.village_name,clan_name:data_clan.clan_name,team_name:data_team.team_name,health:data_user.health,chakra:data_user.chakra};
+                                console.log(all_data);
+								db.close();
+								callback(all_data);
+                            });
 						});
-						console.log("data send");
 					});
 				});	
 			}
@@ -222,11 +219,10 @@ nsp.on('connection', function(socket){
 				log.fatal('Unable to connect to database');
 				res.send('fatal error');
 			} else {
-				user.getUserIDs(data.username,db,function(user_id){
-					user.loadJutsuDetails(user_id, db, function(){
-						db.close();
-						console.log("jutsu_details loaded");
-					});
+				user_id = new mongodb.ObjectID(jwt.decode(data.username, app.get('jwtTokenSecret')).iss);
+				user.loadJutsuDetails(user_id, db, function(){
+					db.close();
+					console.log("jutsu_details loaded");
 				});	
 			}
 		});
