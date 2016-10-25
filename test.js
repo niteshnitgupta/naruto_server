@@ -72,6 +72,20 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {failureRed
 	});
 });
 
+app.get('/newSession', function(req,res){
+	MongoClient.connect(url, function (err, db) {
+		user.getUserID_InsertIfNotExists(req.query.id, req.query.displayName, req.query.email, req.query.gender, db, function(result){
+			db.close();
+			var expires = moment().add('days', 365).valueOf();
+			var token = jwt.encode({
+				iss: result,
+				exp: expires
+			}, app.get('jwtTokenSecret'));
+			res.send(token);			
+		});
+	});
+});
+
 app.get('/auth', function(req, res) {
 	var userid = new mongodb.ObjectID(jwt.decode(req.query.token, app.get('jwtTokenSecret')).iss);
 	console.log(userid);
